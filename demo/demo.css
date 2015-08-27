@@ -1,0 +1,12 @@
+/* html, body { height: 97%; } */
+
+body { padding: 40px 10px 20px 100px; text-align: left; font-size: 11px; font-family: Verdana, DejaVu Sans, sans-serif; position: relative; }
+
+.default-value { margin-left: 10px; }
+
+.section-separator { margin-top: 20px; margin-bottom: 20px; }
+
+.styled-slider .slider-box { background: #636367; vertical-align: top; }
+.styled-slider .slider-handle { border-radius: 50%; }
+.styled-slider canvas { display: inline; }
+
