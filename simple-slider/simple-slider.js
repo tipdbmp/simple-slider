@@ -7,6 +7,9 @@ var SimpleSlider = (function(/*Dom*/) {
     var traits = {
         set_value: set_value,
         get_value: get_value,
+
+        _set_value_from_handle_x: _set_value_from_handle_x,
+        _handle_x_to_value: _handle_x_to_value,
     };
 
     var proto = {
@@ -40,7 +43,7 @@ var SimpleSlider = (function(/*Dom*/) {
 //         self.$root = self.$box
 //           = $('div.slider-box',
 //                 $('div.slider-box-content',
-//                     self.$line = $('div.slider-line',
+//                     self.$line = $('div.slider-line', {}, {mousedown: on_slider_line_mousedown},
 //                         self.$handle = $('div.slider-handle', {}, {mousedown:on_handle_grab}))));
 
         self.$root = self.$box = document.createElement('div');
@@ -51,6 +54,7 @@ var SimpleSlider = (function(/*Dom*/) {
 
         self.$line = document.createElement('div');
         self.$line.setAttribute('class', 'slider-line');
+        self.$line.addEventListener('mousedown', on_slider_line_mousedown, false);
 
         self.$handle = document.createElement('div');
         self.$handle.setAttribute('class', 'slider-handle');
@@ -74,8 +78,19 @@ var SimpleSlider = (function(/*Dom*/) {
         self.set_value(self.value.initial);
 
 
+        function on_slider_line_mousedown(event) {
+//             console.log('slider line clicked');
+
+            var new_handle_x = event.offsetX;
+            self._set_value_from_handle_x(new_handle_x);
+        }
+
         function on_handle_grab(event) {
 //             console.log('handle grab');
+
+            // prevent the $line mousedown's handler (on_slider_line_mousedown)
+            // from getting called
+            event.stopPropagation();
 
             self.handle_grab_offset.x = event.offsetX;
             self.handle_grab_offset.y = event.offsetY;
@@ -83,16 +98,14 @@ var SimpleSlider = (function(/*Dom*/) {
             document.addEventListener('mouseup', on_handle_release, false);
             document.addEventListener('mousemove', on_handle_move, false);
 
-            document.body.classList.add('simple-slider-disable-text-selection');
+            document.body.classList.add('simple-slider-disable-text-selection', 'simple-slider-cursor-pointer');
         }
 
         function on_handle_release(event) {
-//             console.log('handle release');
-
             document.removeEventListener('mouseup', on_handle_release, false);
             document.removeEventListener('mousemove', on_handle_move, false);
 
-            document.body.classList.remove('simple-slider-disable-text-selection');
+            document.body.classList.remove('simple-slider-disable-text-selection', 'simple-slider-cursor-pointer');
         }
 
         function on_handle_move(event) {
@@ -112,17 +125,27 @@ var SimpleSlider = (function(/*Dom*/) {
 //             handle.y = mouse_y - line_y;
 //             handle.y = clamp(handle.y, handle.min_y, handle.max_y);
 
-            self.set_value(map(
-                handle.x,
-                handle.min_x, handle.max_x,
-                self.value.min, self.value.max
-            ));
+            self._set_value_from_handle_x(self.handle.x);
 
             self.$handle.style.left = handle.x + 'px';
             self.$handle.style.top = handle.y + 'px';
         }
 
         return self;
+    }
+
+    function _set_value_from_handle_x(handle_x) {
+        var value = this._handle_x_to_value(handle_x);
+        this.set_value(value);
+    }
+
+    function _handle_x_to_value(handle_x) {
+        var result = map(
+            handle_x,
+            this.handle.min_x, this.handle.max_x,
+            this.value.min, this.value.max
+        );
+        return result;
     }
 
     function set_value(value) {
@@ -134,6 +157,7 @@ var SimpleSlider = (function(/*Dom*/) {
 
         this.value.current = value;
 
+        // value to handle.x
         this.handle.x = map(
             this.value.current,
             this.value.min, this.value.max,
@@ -153,17 +177,20 @@ var SimpleSlider = (function(/*Dom*/) {
     }
 
 
+    // helper functions
+
     function norm(x, a, b) {
         var result = (x - a) / (b - a);
         return result;
     }
 
     function lerp(t, a, b) {
-        var result = // a + t * (b - a);
-                     // a + t * b - t * a;
-                     // t * b + a - t * a;
-                     // t * b + a * (1 - t);
-                       (1 - t) * a + t * b;
+        var result =
+        // a + t * (b - a);
+        // a + t * b - t * a;
+        // t * b + a - t * a;
+        // t * b + a * (1 - t);
+        (1 - t) * a + t * b;
         return result;
     }
 
@@ -238,7 +265,6 @@ var SimpleSlider = (function(/*Dom*/) {
 
         return embed;
     }());
-
 
     var SimpleSlider = {
         traits: traits,

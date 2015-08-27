@@ -1,8 +1,9 @@
 .simple-slider-disable-text-selection { -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+.simple-slider-cursor-pointer { cursor: pointer; }
 
 .slider-box { background: pink; display: inline-table; }
 .slider-box .slider-box-content { display: table-cell; text-align: center; vertical-align: middle; }
-.slider-box .slider-line { background: #AFAFAF;  margin: 0px auto; border-radius: 2px; position: relative; }
-.slider-box .slider-handle { background: #E65182; position: absolute; }
+.slider-box .slider-line { background: #AFAFAF;  margin: 0px auto; border-radius: 2px; position: relative; cursor: pointer; }
+.slider-box .slider-handle { background: #E65182; position: absolute; cursor: pointer; }
 
 
