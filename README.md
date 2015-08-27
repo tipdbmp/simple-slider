@@ -14,7 +14,7 @@ var default_ss = SimpleSlider.$new({
     line: { width: 180, height: 5 },
     handle: { width: 5, height: 20 },
 
-    value: { initial: 50, min: 0, max: 100, step: undefined, current: 0 },
+    value: { initial: 50, min: 0, max: 100, step: undefined },
     callback: undefined,
 });
 ```
